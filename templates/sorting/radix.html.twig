@@ -1,0 +1,399 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Radix Sort Algorithm{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="algorithm-header">
+        <h1>Radix Sort Algorithm</h1>
+        <div class="complexity-badges">
+            <span class="badge">Time: O(d * (n + b))</span>
+            <span class="badge">Space: O(n + b)</span>
+            <span class="badge">Stable: Yes</span>
+            <span class="badge">Non-Comparative: Yes</span>
+        </div>
+    </div>
+
+    <div class="algorithm-description">
+        <h2>Description</h2>
+        <p>Radix Sort is a non-comparative sorting algorithm that sorts integers by processing each digit position, starting from the least significant digit to the most significant digit. It uses counting sort as a subroutine to sort elements with same radix (base).</p>
+    </div>
+
+    <div class="visualization-container">
+        <h2>Live Visualization</h2>
+        <div id="array-container"></div>
+        <div id="buckets-container">
+            <h3>Digit Buckets (0-9)</h3>
+            <div class="buckets"></div>
+        </div>
+        <div class="controls">
+            <button id="startBtn" class="btn primary">Start Sort</button>
+            <button id="resetBtn" class="btn secondary">Reset Array</button>
+            <div class="speed-control">
+                <label for="speed">Speed:</label>
+                <input type="range" id="speed" min="1" max="100" value="50">
+            </div>
+        </div>
+    </div>
+
+    <div class="implementation-examples">
+        <h2>Implementation Examples</h2>
+        
+        <div class="code-tabs">
+            <button class="tab-btn active" onclick="showCode('js')">JavaScript</button>
+            <button class="tab-btn" onclick="showCode('python')">Python</button>
+            <button class="tab-btn" onclick="showCode('rust')">Rust</button>
+        </div>
+
+        <div id="js-code" class="code-block active">
+            <pre><code>
+function radixSort(arr) {
+    const max = Math.max(...arr);
+    
+    // Do counting sort for every digit
+    for (let exp = 1; Math.floor(max / exp) > 0; exp *= 10) {
+        countingSortByDigit(arr, exp);
+    }
+    return arr;
+}
+
+function countingSortByDigit(arr, exp) {
+    const n = arr.length;
+    const output = new Array(n).fill(0);
+    const count = new Array(10).fill(0);
+    
+    // Store count of occurrences in count[]
+    for (let i = 0; i < n; i++) {
+        count[Math.floor(arr[i] / exp) % 10]++;
+    }
+    
+    // Change count[i] to contain actual position
+    for (let i = 1; i < 10; i++) {
+        count[i] += count[i - 1];
+    }
+    
+    // Build the output array
+    for (let i = n - 1; i >= 0; i--) {
+        const digit = Math.floor(arr[i] / exp) % 10;
+        output[count[digit] - 1] = arr[i];
+        count[digit]--;
+    }
+    
+    // Copy the output array to arr[]
+    for (let i = 0; i < n; i++) {
+        arr[i] = output[i];
+    }
+}
+            </code></pre>
+        </div>
+
+        <div id="python-code" class="code-block">
+            <pre><code>
+def radix_sort(arr):
+    # Find the maximum number to know number of digits
+    max_num = max(arr)
+    
+    # Do counting sort for every digit
+    exp = 1
+    while max_num // exp > 0:
+        counting_sort_by_digit(arr, exp)
+        exp *= 10
+    return arr
+
+def counting_sort_by_digit(arr, exp):
+    n = len(arr)
+    output = [0] * n
+    count = [0] * 10
+    
+    # Store count of occurrences in count[]
+    for i in range(n):
+        index = arr[i] // exp
+        count[index % 10] += 1
+    
+    # Change count[i] to actual position
+    for i in range(1, 10):
+        count[i] += count[i - 1]
+    
+    # Build the output array
+    i = n - 1
+    while i >= 0:
+        index = arr[i] // exp
+        output[count[index % 10] - 1] = arr[i]
+        count[index % 10] -= 1
+        i -= 1
+    
+    # Copy the output array to arr[]
+    for i in range(n):
+        arr[i] = output[i]
+            </code></pre>
+        </div>
+
+        <div id="rust-code" class="code-block">
+            <pre><code>
+fn radix_sort(arr: &mut [u32]) {
+    if arr.is_empty() {
+        return;
+    }
+    
+    let max = *arr.iter().max().unwrap();
+    let mut exp = 1;
+    
+    while max / exp > 0 {
+        counting_sort_by_digit(arr, exp);
+        exp *= 10;
+    }
+}
+
+fn counting_sort_by_digit(arr: &mut [u32], exp: u32) {
+    let n = arr.len();
+    let mut output = vec![0; n];
+    let mut count = [0; 10];
+    
+    // Store count of occurrences
+    for &num in arr.iter() {
+        let digit = ((num / exp) % 10) as usize;
+        count[digit] += 1;
+    }
+    
+    // Change count[i] to actual position
+    for i in 1..10 {
+        count[i] += count[i - 1];
+    }
+    
+    // Build output array
+    for &num in arr.iter().rev() {
+        let digit = ((num / exp) % 10) as usize;
+        count[digit] -= 1;
+        output[count[digit]] = num;
+    }
+    
+    arr.copy_from_slice(&output);
+}
+            </code></pre>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script type="module">
+    const arrayContainer = document.getElementById('array-container');
+    const bucketsContainer = document.querySelector('.buckets');
+    let numbers = [];
+    
+    function generateArray() {
+        numbers = Array.from({length: 20}, () => Math.floor(Math.random() * 100));
+        visualizeArray();
+    }
+
+    function visualizeArray() {
+        arrayContainer.innerHTML = '';
+        numbers.forEach(num => {
+            const bar = document.createElement('div');
+            bar.className = 'bar';
+            bar.style.height = `${num * 3}px`;
+            bar.setAttribute('data-value', num);
+            arrayContainer.appendChild(bar);
+        });
+    }
+
+    async function radixSort() {
+        const bars = document.querySelectorAll('.bar');
+        const max = Math.max(...numbers);
+        
+        for (let exp = 1; Math.floor(max / exp) > 0; exp *= 10) {
+            await countingSortByDigit(exp);
+        }
+    }
+
+    async function countingSortByDigit(exp) {
+        const n = numbers.length;
+        const output = new Array(n).fill(0);
+        const count = new Array(10).fill(0);
+        const bars = document.querySelectorAll('.bar');
+        
+        for (let i = 0; i < n; i++) {
+            count[Math.floor(numbers[i] / exp) % 10]++;
+        }
+        
+        for (let i = 1; i < 10; i++) {
+            count[i] += count[i - 1];
+        }
+        
+        for (let i = n - 1; i >= 0; i--) {
+            const digit = Math.floor(numbers[i] / exp) % 10;
+            output[count[digit] - 1] = numbers[i];
+            count[digit]--;
+        }
+        
+        for (let i = 0; i < n; i++) {
+            numbers[i] = output[i];
+        }
+        
+        visualizeArray();
+        await new Promise(resolve => setTimeout(resolve, getDelay()));
+    }
+
+    function showCode(language) {
+        document.querySelectorAll('.code-block').forEach(block => block.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`${language}-code`).classList.add('active');
+        document.querySelector(`[onclick="showCode('${language}')"]`).classList.add('active');
+    }
+
+    const speedControl = document.getElementById('speed');
+    const getDelay = () => 200 - (speedControl.value * 2);
+
+    document.getElementById('startBtn').addEventListener('click', radixSort);
+    document.getElementById('resetBtn').addEventListener('click', generateArray);
+    
+    window.showCode = showCode;
+    generateArray();
+</script>
+{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    :root {
+        --font-primary: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+            "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji",
+            "Segoe UI Emoji", "Segoe UI Symbol";
+    }
+
+    body {
+        font-family: var(--font-primary);
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    h1, h2 {
+        font-family: var(--font-primary);
+        font-weight: 600;
+        line-height: 1.2;
+    }
+
+    code, pre {
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .algorithm-header {
+        margin-bottom: 2rem;
+    }
+
+    .complexity-badges {
+        margin-top: 1rem;
+    }
+
+    .badge {
+        background-color: #2c3e50;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        margin-right: 1rem;
+        font-size: 0.9rem;
+    }
+
+    .visualization-container {
+        background-color: #f8f9fa;
+        padding: 2rem;
+        border-radius: 8px;
+        margin: 2rem 0;
+    }
+
+    #array-container {
+        height: 400px;
+        display: flex;
+        align-items: flex-end;
+        gap: 2px;
+        margin: 2rem 0;
+        background-color: white;
+        padding: 1rem;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .bar {
+        flex: 1;
+        background-color: #3498db;
+        transition: height 0.1s ease;
+        border-radius: 2px 2px 0 0;
+    }
+
+    .controls {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: background-color 0.2s;
+    }
+
+    .primary {
+        background-color: #2ecc71;
+        color: white;
+    }
+
+    .secondary {
+        background-color: #e74c3c;
+        color: white;
+    }
+
+    .implementation-examples {
+        margin-top: 3rem;
+    }
+
+    .code-tabs {
+        margin-bottom: 1rem;
+    }
+
+    .tab-btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        background: none;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+    }
+
+    .tab-btn.active {
+        border-bottom-color: #3498db;
+        color: #3498db;
+    }
+
+    .code-block {
+        display: none;
+        background-color: #2c3e50;
+        padding: 1rem;
+        border-radius: 4px;
+    }
+
+    .code-block.active {
+        display: block;
+    }
+
+    .code-block pre {
+        margin: 0;
+        color: #ecf0f1;
+    }
+
+    .speed-control {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+</style>
+{% endblock %}
