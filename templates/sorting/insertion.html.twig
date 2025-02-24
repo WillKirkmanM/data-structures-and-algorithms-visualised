@@ -1,0 +1,324 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Insertion Sort Algorithm{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="algorithm-header">
+        <h1>Insertion Sort Algorithm</h1>
+        <div class="complexity-badges">
+            <span class="badge">Time: O(n²)</span>
+            <span class="badge">Space: O(1)</span>
+            <span class="badge">Stable: Yes</span>
+        </div>
+    </div>
+
+    <div class="algorithm-description">
+        <h2>Description</h2>
+        <p>Insertion Sort builds the final sorted array one item at a time, by repeatedly inserting a new element into the sorted portion of the array. It's efficient for small data sets and nearly sorted arrays.</p>
+    </div>
+
+    <div class="visualization-container">
+        <h2>Live Visualization</h2>
+        <div id="array-container"></div>
+        <div class="controls">
+            <button id="startBtn" class="btn primary">Start Sort</button>
+            <button id="resetBtn" class="btn secondary">Reset Array</button>
+            <div class="speed-control">
+                <label for="speed">Speed:</label>
+                <input type="range" id="speed" min="1" max="100" value="50">
+            </div>
+        </div>
+    </div>
+
+    <div class="implementation-examples">
+        <h2>Implementation Examples</h2>
+        
+        <div class="code-tabs">
+            <button class="tab-btn active" onclick="showCode('js')">JavaScript</button>
+            <button class="tab-btn" onclick="showCode('python')">Python</button>
+            <button class="tab-btn" onclick="showCode('rust')">Rust</button>
+        </div>
+
+        <div id="js-code" class="code-block active">
+            <pre><code>
+function insertionSort(arr) {
+    for (let i = 1; i < arr.length; i++) {
+        let key = arr[i];
+        let j = i - 1;
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        arr[j + 1] = key;
+    }
+    return arr;
+}
+            </code></pre>
+        </div>
+
+        <div id="python-code" class="code-block">
+            <pre><code>
+def insertion_sort(arr):
+    for i in range(1, len(arr)):
+        key = arr[i]
+        j = i - 1
+        while j >= 0 and arr[j] > key:
+            arr[j + 1] = arr[j]
+            j -= 1
+        arr[j + 1] = key
+    return arr
+            </code></pre>
+        </div>
+
+        <div id="rust-code" class="code-block">
+            <pre><code>
+fn insertion_sort<T: Ord>(arr: &mut [T]) {
+    for i in 1..arr.len() {
+        let mut j = i;
+        while j > 0 && arr[j - 1] > arr[j] {
+            arr.swap(j - 1, j);
+            j -= 1;
+        }
+    }
+}
+            </code></pre>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    :root {
+        --font-primary: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+            "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji",
+            "Segoe UI Emoji", "Segoe UI Symbol";
+    }
+
+    body {
+        font-family: var(--font-primary);
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    h1, h2 {
+        font-family: var(--font-primary);
+        font-weight: 600;
+        line-height: 1.2;
+    }
+
+    code, pre {
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .algorithm-header {
+        margin-bottom: 2rem;
+    }
+
+    .complexity-badges {
+        margin-top: 1rem;
+    }
+
+    .badge {
+        background-color: #2c3e50;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        margin-right: 1rem;
+        font-size: 0.9rem;
+    }
+
+    .visualization-container {
+        background-color: #f8f9fa;
+        padding: 2rem;
+        border-radius: 8px;
+        margin: 2rem 0;
+    }
+
+    #array-container {
+        height: 400px;
+        display: flex;
+        align-items: flex-end;
+        gap: 2px;
+        margin: 2rem 0;
+        background-color: white;
+        padding: 1rem;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .bar {
+        flex: 1;
+        background-color: #3498db;
+        transition: height 0.1s ease;
+        border-radius: 2px 2px 0 0;
+    }
+
+    .controls {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: background-color 0.2s;
+    }
+
+    .primary {
+        background-color: #2ecc71;
+        color: white;
+    }
+
+    .secondary {
+        background-color: #e74c3c;
+        color: white;
+    }
+
+    .implementation-examples {
+        margin-top: 3rem;
+    }
+
+    .code-tabs {
+        margin-bottom: 1rem;
+    }
+
+    .tab-btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        background: none;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+    }
+
+    .tab-btn.active {
+        border-bottom-color: #3498db;
+        color: #3498db;
+    }
+
+    .code-block {
+        display: none;
+        background-color: #2c3e50;
+        padding: 1rem;
+        border-radius: 4px;
+    }
+
+    .code-block.active {
+        display: block;
+    }
+
+    .code-block pre {
+        margin: 0;
+        color: #ecf0f1;
+    }
+
+    .speed-control {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script type="module">
+    const arrayContainer = document.getElementById('array-container');
+    let numbers = [];
+    
+    function generateArray() {
+        numbers = Array.from({length: 20}, () => Math.floor(Math.random() * 100));
+        visualizeArray();
+    }
+
+    function visualizeArray() {
+        arrayContainer.innerHTML = '';
+        numbers.forEach(num => {
+            const bar = document.createElement('div');
+            bar.className = 'bar';
+            bar.style.height = `${num * 3}px`;
+            bar.setAttribute('data-value', num);
+            arrayContainer.appendChild(bar);
+        });
+    }
+
+    function showCode(language) {
+        document.querySelectorAll('.code-block').forEach(block => block.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`${language}-code`).classList.add('active');
+        document.querySelector(`[onclick="showCode('${language}')"]`).classList.add('active');
+    }
+
+    const speedControl = document.getElementById('speed');
+    const getDelay = () => 200 - (speedControl.value * 2);
+
+    function isSorted(arr, endIndex) {
+        for (let i = 0; i <= endIndex - 1; i++) {
+            if (arr[i] > arr[i + 1]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    async function insertionSort() {
+        const bars = document.querySelectorAll('.bar');
+        
+        bars[0].style.backgroundColor = '#2ecc71';
+        
+        for (let i = 1; i < numbers.length; i++) {
+            let key = numbers[i];
+            let j = i - 1;
+            
+            bars[i].style.backgroundColor = '#ff0000';
+            await new Promise(resolve => setTimeout(resolve, getDelay()));
+            
+            while (j >= 0 && numbers[j] > key) {
+                bars[j].style.backgroundColor = '#ff0000';
+                await new Promise(resolve => setTimeout(resolve, getDelay()));
+                
+                numbers[j + 1] = numbers[j];
+                j--;
+                
+                visualizeArray();
+                
+                if (isSorted(numbers, i)) {
+                    for (let k = 0; k <= i; k++) {
+                        bars[k].style.backgroundColor = '#2ecc71';
+                    }
+                } else {
+                    bars[j + 1].style.backgroundColor = '#3498db';
+                }
+            }
+            
+            numbers[j + 1] = key;
+            visualizeArray();
+            
+            if (isSorted(numbers, i)) {
+                for (let k = 0; k <= i; k++) {
+                    bars[k].style.backgroundColor = '#2ecc71';
+                }
+            }
+        }
+    }
+
+    document.getElementById('startBtn').addEventListener('click', insertionSort);
+    document.getElementById('resetBtn').addEventListener('click', generateArray);
+    
+    window.showCode = showCode;
+    generateArray();
+</script>
+{% endblock %}
